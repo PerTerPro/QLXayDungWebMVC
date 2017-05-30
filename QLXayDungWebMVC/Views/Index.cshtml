@@ -1,0 +1,67 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.ChamCong>
+
+@{
+    ViewBag.Title = "Index";
+    QLXayDungWebMVC.Models.QLCTXayDungContext db = new QLXayDungWebMVC.Models.QLCTXayDungContext();
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Danh Sách Công Trình
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="#">Nhân sự</a></li>
+        <li class="active">Danh Sách Công Trình</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên Công Trình</th>
+                                <th>Số lượng nhân công</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var chamcong in Model)
+                            {
+                                <tr>
+                                    <td><img src="~/Content/CongTrinh/@chamcong.CongTrinh.Image" style="width:50px;height:auto" /></td>
+                                    <td>@chamcong.CongTrinh.TenCT</td>
+                                    <td>@chamcong.NhanVien.ChamCongs.Count</td>
+                                    <td>
+                                        @Html.ActionLink("Danh sách nhân công", "DanhSachNhanVien", new { id = chamcong.IdCT }) 
+                                    </td>
+
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên Công Trình</th>
+                                <th>Số lượng nhân công</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

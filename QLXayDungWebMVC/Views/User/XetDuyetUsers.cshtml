@@ -1,0 +1,141 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.User>
+@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+@section Styles{
+    <style>
+    .example-modal .modal {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        right: auto;
+        left: auto;
+        display: block;
+        z-index: 1;
+    }
+
+    .example-modal .modal {
+        background: transparent !important;
+    }
+</style>
+}
+
+@section Scripts{
+
+<script>
+    $(document).ready(function () {
+        $('#table').DataTable();
+
+        $("#btnXetDuyet").click(function (e) {
+            var temp = '';
+            $.each($("#table tbody tr"), function (index, value) {
+                var checkbox = $(this).find("input[type='checkbox']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
+                if (checkbox == true)                                                   /* Nếu checked == true */ {
+                    var id = $(this).attr("data-id");
+                    temp += id + "¶"
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/User/XetDuyet",
+                data: { listId: temp },
+                success: function (result) {
+                    location.reload();
+                }
+            });
+        });
+
+        $("#Choose").click(function () {
+            $.each($("#table tbody tr"), function (index, value) {
+                var checkbox = $("#table tbody tr").find("input[type='checkbox']")
+                checkbox.prop("checked", true);                     //Add Attr Checked
+                $('.icheckbox_flat-green').addClass("checked");
+
+            });
+        });
+
+        $("#NoChoose").click(function () {
+            $.each($("#table tbody tr"), function (index, value) {
+                var checkbox = $("#table tbody tr").find("input[type='checkbox']")
+                checkbox.removeAttr("checked");
+                $('.icheckbox_flat-green').removeClass("checked");
+            });
+        });
+
+    })
+</script>
+}
+
+
+<section class="content-header">
+    <h1>
+        Xét duyệt Users
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> DashBoard</a></li>
+        <li><a href="#">Tài khoản</a></li>
+        <li class="active">Xét duyệt Users</li>
+    </ol>
+</section>
+
+<div class="example-modal">
+    <div class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>*@
+                    <h4 class="modal-title">Danh sách Users</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>FullName</th>
+                                <th>Ngày Tạo</th>
+                                <th>Xét duyệt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model)
+                            {
+                                <tr data-id="@user.ID">
+                                    <td>@user.Username</td>
+                                    <td>@user.Name</td>
+                                    <td>@user.NgayTao.ToString("dd/MM/yyyy")</td>
+                                    <td><input type="checkbox" class="flat-red" checked></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Username</th>
+                                <th>FullName</th>
+                                <th>Ngày Tạo</th>
+                                <th>Xét duyệt</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <!-- /.content -->
+                </div>
+
+
+
+                <div class="modal-footer">
+                    <span class="pull-left"><input type="radio" name="Choose" id="Choose"> Chọn tất cả | </span>
+                    <span class="pull-left"><input type="radio" name="Choose" id="NoChoose"> Bỏ chọn</span>
+                    @*<button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>*@
+                    <button id="btnXetDuyet" type="submit" class="btn btn-primary">Xét duyệt</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+

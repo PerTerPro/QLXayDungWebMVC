@@ -1,0 +1,152 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.PhongBan>
+@*@model PagedList.IPagedList<QLXayDungWebMVC.Models.PhongBan>
+@using PagedList.Mvc;*@
+
+@{
+    ViewBag.Title = "Danh sách phòng ban";
+    QLXayDungWebMVC.Dapper.NhanVienRepo nhanvien = new QLXayDungWebMVC.Dapper.NhanVienRepo();
+}
+
+@section PhongBan{
+    <li class="treeview active">
+    <a href="#">
+        <i class="fa fa-hospital-o"></i>
+        <span>Phòng Ban</span>
+        <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+        </span>
+    </a>
+    <ul class="treeview-menu">
+        <li><a href="~/PhongBan/Create"><i class="fa fa-circle-o"></i> Thêm phòng ban</a></li>
+        <li class="active"><a href="~/PhongBan/Index"><i class="fa fa-circle-o"></i> Danh sách phòng ban</a></li>
+        <li><a href="#"><i class="fa fa-circle-o"></i> Chuyển nhân sự</a></li>
+    </ul>
+</li>
+}
+
+@section styles{
+
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $('#table').DataTable({
+            "language": {
+                "search": "Search:",
+                "searchPlaceholder": "Nhập thông tin...",
+                "zeroRecords": "Không có thông tin nào thỏa mãn điều kiện tìm kiếm..."
+            }
+        });
+    });
+</script>
+
+<script src="~/Content/PopupWindow.js"></script>
+
+
+}
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Danh sách Nhân Viên
+            <small></small>
+           
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li><a href="#">Nhân sự</a></li>
+            <li class="active">Danh sách nhân viên</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <a href="/PhongBan/Create"><button class="btn btn-info glyphicon glyphicon-plus" title="Thêm Phòng Ban"></button></a>
+                    </div>
+
+                    <!-- /.box-header -->
+                    <div class="box-body">                       
+                        <table id="table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên Phòng Ban</th>
+                                    <th>Mô Tả</th>
+                                    <th>Điện Thoại</th>
+                                    <th>Số lượng nhân sự</th>
+                                    <th>Trưởng Phòng</th>
+                                    <th>Chức năng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var phongban in Model)
+                                {
+                                    if (phongban.IdTP != 0)
+                                    {
+                                        <tr>
+                                            <td>@phongban.IdPB</td>
+                                            <td>@phongban.TenPB</td>
+                                            <td>@phongban.MoTa</td>
+                                            <td>@phongban.DienThoai</td>
+                                            <td>@nhanvien.GetNhanVienByIdPB(phongban.IdPB).Count()</td>
+                                            @if (@nhanvien.GetNhanVienByID(phongban.IdTP) != null)
+                                            {
+                                                <td>@nhanvien.GetNhanVienByID(phongban.IdTP).HoTen</td>
+                                            }
+
+                                            <td>
+                                                @*<button data-url="@Url.Action("Edit", "PhongBan", new { id = phongban.IdPB })" class="btn btn-info ">Sửa</button>
+                                                <button data-url="@Url.Action("Details", "PhongBan", new { id = phongban.IdPB })" class="btn btn-success">Chi Tiết</button>
+                                                <button data-url="@Url.Action("Delete", "PhongBan", new { id = phongban.IdPB })" class="btn btn-danger">Xóa</button>*@
+                                                @*@Html.ActionLink("Sửa", "Edit", new { id = phongban.IdPB }) |
+                                                @Html.ActionLink("Chi Tiết", "Details", new { id = phongban.IdPB }) |
+                                                @Html.ActionLink("Xóa", "Delete", new { id = phongban.IdPB }) |*@
+
+                                                @Html.Raw("<a data-url='' href='/PhongBan/Details/" + phongban.IdPB + "' id='" + phongban.IdPB + "' title='Detail'> <span class='glyphicon glyphicon-search'> </span> </a>")
+                                                @Html.Raw("<a href='/PhongBan/Edit/" + phongban.IdPB + "' id='" + phongban.IdPB + "' title='Edit'> <span class='glyphicon glyphicon-edit'> </span> </a>")
+                                                @Html.Raw("<a data-url='' href='/PhongBan/Delete/" + phongban.IdPB + "' id='" + phongban.IdPB + "' title='Delete'> <span class='glyphicon glyphicon-trash'> </span> </a>")
+
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên Phòng Ban</th>
+                                    <th>Mô Tả</th>
+                                    <th>Điện Thoại</th>
+                                    <th>Số lượng nhân sự</th>
+                                    <th>Trưởng Phòng</th>
+                                    <th>Chức năng</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+<div id='myModal' class='modal fade in'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+
+

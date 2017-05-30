@@ -1,0 +1,92 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.NhanVien>
+
+@{
+    ViewBag.Title = "Danh sách nhân viên";
+    QLXayDungWebMVC.Dapper.PhongBanRepo phongbanRP = new QLXayDungWebMVC.Dapper.PhongBanRepo();
+    QLXayDungWebMVC.Dapper.CongTrinhRepo congtrinhRP = new QLXayDungWebMVC.Dapper.CongTrinhRepo();
+    QLXayDungWebMVC.Dapper.ChamCongRepo chamcongRP = new QLXayDungWebMVC.Dapper.ChamCongRepo();
+}
+
+@section scripts{
+
+
+}
+
+<table id="tableNV" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ảnh đại diện</th>
+            <th>Họ Tên</th>
+            <th>Chức vụ</th>
+            <th>Công trình đang tham gia</th>
+            <th>Thời gian tham gia</th>
+            <th>Chọn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var nhanvien in Model)
+            {
+            <tr data-id="@nhanvien.IdNV">
+                <td>@nhanvien.IdNV</td>
+                <td><img src="~/Content/NhanVien/@nhanvien.AnhNV" style="width:50px;height:auto" /></td>
+                <td>@nhanvien.HoTen</td>
+                @if (phongbanRP.GetPhongBanByID(nhanvien.IdPB).IdTP == nhanvien.IdNV)
+                {
+                    <td>Trưởng phòng</td>
+                }
+                else
+                {
+                    <td>Nhân viên</td>
+                }
+                <td>
+                    @foreach (var chamcong in chamcongRP.GetChamCongByIdNV(nhanvien.IdNV))
+                    {
+                        if ((congtrinhRP.GetCongTrinhByID(chamcong.IdCT).NgayKetThuc - DateTime.Now).TotalDays > 0)
+                        {
+                            @congtrinhRP.GetCongTrinhByID(chamcong.IdCT).TenCT  <br />
+                        }
+                        else
+                        {
+                            @congtrinhRP.GetCongTrinhByID(chamcong.IdCT).TenCT <label>(Đã hoàn thành)</label> <br />
+                        }
+
+                    }
+                </td>
+
+
+                <td>
+                    @foreach (var chamcong in chamcongRP.GetChamCongByIdNV(nhanvien.IdNV))
+                    {
+                        if ((congtrinhRP.GetCongTrinhByID(chamcong.IdCT).NgayKetThuc - DateTime.Now).TotalDays > 0)
+                        {
+                            @chamcong.NgayBatDau.ToString("dd/MM/yyyy") <label> - </label> @chamcong.NgayKetThuc.ToString("dd/MM/yyyy") <br />
+                        }
+                        else
+                        {
+                            @chamcong.NgayBatDau.ToString("dd/MM/yyyy") <label> - </label> @chamcong.NgayKetThuc.ToString("dd/MM/yyyy") <br />
+                        }
+
+                    }
+                </td>
+                <td><input type="checkbox" class="flat-red"></td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>ID</th>
+            <th>Ảnh đại diện</th>
+            <th>Họ Tên</th>
+            <th>Chức vụ</th>
+            <th>Công trình đang tham gia</th>
+            <th>Thời gian tham gia</th>
+            <th>Chọn</th>
+        </tr>
+    </tfoot>
+</table>
+
+
+
+
+

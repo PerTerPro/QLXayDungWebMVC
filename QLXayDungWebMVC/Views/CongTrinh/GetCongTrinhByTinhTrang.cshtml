@@ -1,0 +1,54 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.CongTrinh>
+@{
+    Layout = null;
+    ViewBag.Title = "Danh sách công trình";
+    QLXayDungWebMVC.Dapper.PhongBanRepo phongbanRP = new QLXayDungWebMVC.Dapper.PhongBanRepo();
+    QLXayDungWebMVC.Dapper.CongTrinhRepo congtrinhRP = new QLXayDungWebMVC.Dapper.CongTrinhRepo();
+    QLXayDungWebMVC.Dapper.ChamCongRepo chamcongRP = new QLXayDungWebMVC.Dapper.ChamCongRepo();
+}
+
+@section scripts{
+
+
+}
+
+<table id="tableCT" class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ảnh</th>
+            <th>Tên công trình</th>
+            <th>Ngày cấp phép</th>
+            <th>Thời gian thi công</th>
+            <th>Chọn</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var congtrinh in Model)
+            {
+            <tr>
+                <td>@congtrinh.IdCT</td>
+                <td><img src="~/Content/CongTrinh/@congtrinh.Image" style="width:50px;height:auto" /></td>
+                <td>@congtrinh.TenCT</td>
+                <td>@congtrinh.NgayCapPhep.ToString("dd/MM/yyyy")</td>
+                <td>@congtrinh.NgayBatDau.ToString("dd/MM/yyyy") <br />@congtrinh.NgayKetThuc.ToString("dd/MM/yyyy") </td>
+                @if ((@congtrinh.NgayKetThuc - DateTime.Now).TotalDays < 0)
+                {
+                    <td><input type="radio" class="minimal" id="@congtrinh.IdCT" name="ChonCT" disabled title="Không thể chọn công trinh đã kết thúc thi công!"></td>
+                }
+                else
+                {<td><input type="radio" class="minimal" id="@congtrinh.IdCT" name="ChonCT" onclick="check()"></td>}
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>ID</th>
+            <th>Ảnh</th>
+            <th>Tên công trình</th>
+            <th>Ngày cấp phép</th>
+            <th>Thời gian thi công</th>
+            <th>Chọn</th>
+        </tr>
+    </tfoot>
+</table>

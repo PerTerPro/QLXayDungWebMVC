@@ -1,0 +1,201 @@
+﻿@model QLXayDungWebMVC.Models.CongTrinh
+
+@{
+    ViewBag.Title = "Chỉnh sửa Công Trình: " + @Model.TenCT;
+}
+
+@section CongTrinh
+{
+    <li class="treeview active">
+        <a href="#">
+            <i class="fa fa-rocket"></i> <span>Công Trình</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li><a href="~/CongTrinh/Create"><i class="fa fa-circle-o"></i> Thêm Công Trình</a></li>
+            <li class="active"><a href="~/CongTrinh/Index"><i class="fa fa-circle-o"></i> Danh sách công trình</a></li>
+        </ul>
+    </li>
+}
+
+@using (Html.BeginForm("Edit", "CongTrinh", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.IdCT)
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Chỉnh sửa Công Trình: @Model.TenCT
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> DashBoard</a></li>
+            <li><a href="#">Công Trình</a></li>
+            <li class="active">Chỉnh sửa Công Trình</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Profile Image -->
+                <div class="box box-success">
+                    <div class="box-body">
+                        <img class="img-thumbnail" src="~/Content/CongTrinh/@Model.Image" id="AnhCT" style="width:400px;height:auto">
+
+                        <div class="box-footer">
+                            <input type="file" name="fileImage" id="fileImage" style="width: 100%;" onchange="readURL(this);" />
+                            @ViewBag.ThongBao
+                        </div>
+
+
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+            <!-- /.col -->
+
+            <div class="col-md-8">
+
+                <div class="box box-success">
+                    <form class="form-horizontal">
+
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Thông tin nhân viên</h3>
+                        </div>
+
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Tên Công Trình</label>
+                                        @*<input type="text" class="form-control" disabled placeholder="Company" value="Creative Code Inc.">*@
+                                        @*@Html.TextBoxFor(model => model.Username, new { @class = "form-control" })   dùng cho MVC 5.0*@
+                                        @Html.EditorFor(model => model.TenCT, new { htmlAttributes = new { @class = "form-control", placeholder = "Tên Công Trình" } })
+                                        @Html.ValidationMessageFor(model => model.TenCT, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Mô Tả Công Trình</label>
+                                        @*<input type="text" class="form-control" disabled placeholder="Company" value="Creative Code Inc.">*@
+                                        @*@Html.TextBoxFor(model => model.Username, new { @class = "form-control" })   dùng cho MVC 5.0*@
+                                        @Html.TextAreaFor(model => model.MoTaCT, new { @class = "form-control", placeholder = "Mô tả Công Trình", @row = 4 })
+                                        @Html.ValidationMessageFor(model => model.MoTaCT, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Ngày Cấp Phép</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            @Html.EditorFor(model => model.NgayCapPhep, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.NgayCapPhep, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Ngày Bắt Đầu Thi Công</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            @Html.EditorFor(model => model.NgayBatDau, new { htmlAttributes = new { @class = "form-control"} })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.NgayBatDau, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Ngày Kết Thúc</label>
+                                        <div class="input-group date">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-calendar"></i>
+                                            </div>
+                                            @Html.EditorFor(model => model.NgayKetThuc, new { htmlAttributes = new { @class = "form-control" } })
+                                        </div>
+                                        @Html.ValidationMessageFor(model => model.NgayKetThuc, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="box-footer">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success btn-block pull-right">Update</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="clearfix"></div>
+                    </form>
+
+                </div>
+            </div>
+            <!-- /.col -->
+
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(function () {
+            //Date picker
+            $('#NgayCapPhep').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $('#NgayBatDau').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+
+            $('#NgayKetThuc').datepicker({
+                dateFormat: 'dd/mm/yy'
+            });
+        });
+    </script>
+
+    <script>
+        //Preview & Update an image before it is uploaded
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#AnhCT').attr('src', e.target.result)
+                         .width(400)
+                        .height(auto);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#fileImage").change(function () {
+            readURL(this);
+        });
+    </script>
+}

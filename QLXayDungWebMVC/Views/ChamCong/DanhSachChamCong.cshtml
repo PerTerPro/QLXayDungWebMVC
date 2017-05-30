@@ -1,0 +1,125 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.CongTrinh>
+
+@{
+    ViewBag.Title = "Danh Sách Công Trình";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    QLXayDungWebMVC.Dapper.ChamCongRepo chamcong = new QLXayDungWebMVC.Dapper.ChamCongRepo();
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+    $(document).ready(function () {
+        $('#table').DataTable();
+    });
+    </script>
+
+}
+
+@section ChamCong{
+    <li class="treeview active">
+    <a href="#">
+        <i class="fa fa-table"></i> <span>Chấm Công</span>
+        <span class="pull-right-container">
+            <i class="fa fa-angle-left pull-right"></i>
+        </span>
+    </a>
+    <ul class="treeview-menu">
+        <li><a href="#"><i class="fa fa-circle-o"></i> Phân công nhân sự</a></li>
+        <li class="active"><a href="~/ChamCong/DanhSachChamCong"><i class="fa fa-circle-o"></i> Danh sách chấm công</a></li>
+        <li><a href="#"><i class="fa fa-circle-o"></i> Chuyển nhân sự</a></li>
+    </ul>
+</li>
+}
+
+
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Danh Sách Công Trình
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="#">Nhân sự</a></li>
+        <li class="active">Danh Sách Công Trình</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                @*<div class="box-header">
+                        <h3 class="box-title">Danh sách Nhân Viên</h3>
+                    </div>*@
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <table id="table" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên Công Trình</th>
+                                <th>Ngày Cấp Phép</th>
+                                <th>Thời gian thi công</th>
+                                <th>Tình trạng</th>
+                                <th>Số lượng nhân công</th>
+                                <th>Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var congtrinh in Model)
+                            {
+                                <tr>
+                                    <td><img src="~/Content/CongTrinh/@congtrinh.Image" style="width:50px;height:auto" /></td>
+                                    <td>@congtrinh.TenCT</td>
+                                    <td>@congtrinh.NgayCapPhep.ToString("dd/MM/yyyy")</td>
+                                    <td>@congtrinh.NgayBatDau.ToString("dd/MM/yyyy")<br />@congtrinh.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                                    @if ((congtrinh.NgayKetThuc - DateTime.Now).TotalDays < 3 && (congtrinh.NgayKetThuc - DateTime.Now).TotalDays > 0)
+                                    {
+                                        <td> Sắp hoàn thành</td>
+                                    }
+                                    else if ((congtrinh.NgayKetThuc - DateTime.Now).TotalDays <= 0)
+                                    {
+                                        <td> Đã kết thúc</td>
+                                    }
+                                    else
+                                    {
+                                        <td> Đang thi công</td>
+                                    }
+                                    <td>@chamcong.GetChamCongByIdCT(congtrinh.IdCT).Count()</td>
+                                    <td>
+                                        @Html.ActionLink("Danh sách nhân công", "DanhSachNhanSu", "ChamCong", new { id = congtrinh.IdCT },null)
+                                    </td>
+
+                                </tr>
+
+
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Ảnh đại diện</th>
+                                <th>Tên Công Trình</th>
+                                @*<th>Mô Tả</th>*@
+                                <th>Ngày Cấp Phép</th>
+                                <th>Ngày Bắt Đầu</th>
+                                <th>Ngày Kết Thúc</th>
+                                <th>Số lượng nhân công</th>
+                                <th>Chức năng</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

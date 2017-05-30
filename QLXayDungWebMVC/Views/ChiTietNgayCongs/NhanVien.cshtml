@@ -1,0 +1,192 @@
+﻿@*@model IEnumerable<QLXayDungWebMVC.Models.ChiTietNgayCong>*@
+@model QLXayDungWebMVC.Models.ChiTietNgayCong
+
+@{
+    QLXayDungWebMVC.Dapper.NhanVienRepo nhanvienRP = new QLXayDungWebMVC.Dapper.NhanVienRepo();
+    QLXayDungWebMVC.Dapper.ChiTietNgayCongRepo chitietRP = new QLXayDungWebMVC.Dapper.ChiTietNgayCongRepo();
+    ViewBag.Title = "Chi Tiết Ngày Công: " + nhanvienRP.GetNhanVienByID(ViewBag.IdNV).HoTen;
+
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+@using (Html.BeginForm("NhanVien", "ChiTietNgayCongs", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Chi Tiết Chấm Công
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> DashBoard</a></li>
+            <li><a href="#">Công Trình</a></li>
+            <li><a href="#">Danh Sách Nhân Viên</a></li>
+            <li class="active">Chi Tiết Ngày Công</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="box box-info">
+                    <form class="form-horizontal">
+
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Chi Tiết Ngày Công</h3>
+                        </div>
+
+                        <div class="box-body">
+                            <table id="table" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày đi làm</th>
+                                        <th>Đi làm</th>
+                                        <th>Lý do nghỉ</th>
+                                        <th>Chức năng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ct in chitietRP.GetChiTietNgayCongByID(ViewBag.IdChamCong))
+                                    {
+                                        <tr>
+                                            <td>@ct.NgayLam.ToString("dd/MM/yyyy")</td>
+                                            @if (@ct.DiLam == 0)
+                                            {
+                                                <td>Có</td>}
+                                            else
+                                            {
+                                                <td>Không</td>}
+                                            <td>@ct.LyDo</td>
+
+                                            <td>
+                                                @Html.ActionLink("Xóa", "Delete", "ChiTietNgayCongs", new { id = ct.IdChamCong }, null)
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>Ngày đi làm</th>
+                                        <th>Đi làm</th>
+                                        <th>Lý do nghỉ</th>
+                                        <th>Chức năng</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+
+
+                        <div class="clearfix"></div>
+                    </form>
+
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="box box-info">
+                    <div class="box-body box-profile">
+                        <!-- Profile Image -->
+
+                        <img class="profile-user-img img-responsive img-circle" src="~/Content/NhanVien/@nhanvienRP.GetNhanVienByID(ViewBag.IdNV).AnhNV" id="AnhCT" style="width:128px;height:auto">
+                        <h3 class="profile-username text-center">@nhanvienRP.GetNhanVienByID(ViewBag.IdNV).HoTen</h3>
+
+                        <p class="text-muted text-center">Thông tin chấm công</p>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <label>Id Chấm Công</label>
+                                @Html.EditorFor(model => model.IdChamCong, new { htmlAttributes = new { @class = "form-control", @Value = ViewBag.IdChamCong, disabled = "disabled" } })
+                                @Html.ValidationMessageFor(model => model.IdChamCong, "", new { @class = "text-danger" })
+                            </li>
+                            <li class="list-group-item">
+                                <label>Ngày Hôm Nay</label>
+                                @*@Html.TextBoxFor(model => model.Username, new { @class = "form-control" })   dùng cho MVC 5.0*@
+                                @Html.EditorFor(model => model.NgayLam, new { htmlAttributes = new { @class = "form-control", @Value = DateTime.Now, disabled = "disabled" } })
+                                @Html.ValidationMessageFor(model => model.NgayLam, "", new { @class = "text-danger" })
+                            </li>
+                            <li class="list-group-item">
+                                <label>Đi Làm</label>
+                                @Html.DropDownListFor(model => model.DiLam, new List<SelectListItem>
+                                                       { new SelectListItem{Text="Có", Value="0",Selected=true},
+                                                         new SelectListItem{Text="Không", Value="1"}}, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.DiLam, "", new { @class = "text-danger" })
+                            </li>
+                            <li class="list-group-item">
+                                <div><label>Lý Do</label></div>
+                                @Html.TextAreaFor(model => model.LyDo, new { @class = "form-control", @rows = 2, placeholder = "Lý do nghỉ..." })
+                                @Html.ValidationMessageFor(model => model.LyDo, "", new { @class = "text-danger" })
+                            </li>
+
+                            
+                        </ul>
+                        <button type="submit" id="btnChamCong" class="btn btn-info btn-block">Chấm Công</button>
+
+
+
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col -->
+
+        </div>
+        <div class="row">
+            
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $('#table').DataTable();
+    });
+</script>
+
+<script>
+    $(document).ready(function(){
+      $("#btnChamCong").click(function(e){
+          $.ajax({
+              url: this.action,
+              type: this.method,
+              data: $(this).serialize(),
+              success: function (result) {
+                      location.reload();
+                  }
+          });
+      });
+    });
+</script>
+
+@if (ViewBag.NgayConLai <= 0 || ViewBag.CheckChamCong > 0)
+    {
+    <script type="text/javascript">
+            $(document).ready(function(){
+                $('#btnChamCong').attr("disabled", true)
+        	$.notify({
+        	    icon: 'glyphicon glyphicon-warning-sign',
+            	message: " Không thể chấm công nữa!"
+            },{
+                type: 'warning',
+                timer: 4000,
+                placement: {
+                    from: "top",
+                    align: "center"
+                },
+            });
+
+
+    	});
+    </script>
+}
+
+}

@@ -1,0 +1,42 @@
+﻿@model QLXayDungWebMVC.Models.ChiTietNgayCong
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/_ViewStart.cshtml";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>ChiTietNgayCong</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.IdChamCong)
+
+        @Html.HiddenFor(model => model.NgayLam)
+
+        @Html.HiddenFor(model => model.DiLam)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LyDo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.LyDo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LyDo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

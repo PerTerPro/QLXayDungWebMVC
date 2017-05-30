@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Login.cshtml";
+}
+
+@section Scripts{
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            $(document).ready(function () {
+                alert('@TempData["Success"]');
+            });
+        </script>
+    }
+}
+
+@using (Html.BeginForm("Login", "User", FormMethod.Post))
+{
+
+    <div class="login-box">
+        <div class="login-logo">            
+            <img src="~/Content/Images/Logo.png" />
+        </div>
+        
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+            <p class="login-box-msg" style="font-size: 13px;color:red">@ViewBag.error</p>
+            <form>
+                <div class="form-group has-feedback">                    
+                    <input type="text" placeholder="Username" name="userName" class="form-control">
+                    <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input type="password" placeholder="Password" name="password" class="form-control">
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="checkbox icheck">
+                            <label>
+                                <input type="checkbox"> Remember Me
+                            </label>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Login</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <a href="~/User/Register" class="text-center">Đăng ký!</a>
+            </form>
+
+        </div>
+        <!-- /.login-box-body -->
+    </div>
+    <!-- /.login-box -->    
+}
+
+
+
+@*@using (Html.BeginForm("Login", "User", FormMethod.Post))
+{
+    <input type="text" placeholder="username" name="userName"><br>
+    <input type="password" placeholder="password" name="password"><br>
+    <p style="font-size: 12px">@ViewBag.error</p>
+                    <input type="submit" value="Login" name="btnLogin">
+}*@

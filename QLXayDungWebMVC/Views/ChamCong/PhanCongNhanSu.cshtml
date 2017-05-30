@@ -1,0 +1,227 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.NhanVien>
+@{
+    ViewBag.Title = "Phân Công Nhân Sự";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    QLXayDungWebMVC.Dapper.CongTrinhRepo congtringRP = new QLXayDungWebMVC.Dapper.CongTrinhRepo();
+}
+
+@section styles{
+
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $.notify({
+                icon: 'glyphicon glyphicon-star',
+                message: "<b> Vui lòng chọn Công Trình </b>!"
+            }, {
+                type: 'warning',
+                timer: 2000,
+                placement: {
+                    from: "bottom",
+                    align: "right"
+                },
+
+            });
+
+            var IdPB = $("#ddPhongBan option:selected").val();
+            $.get('@Url.Action("GetNhanVienByIdPB","NhanVien")',
+                    { id: IdPB }, function (data) {
+                        $("#selectNV").html(data);
+                    });
+
+            $("#ddPhongBan").change(function () {
+                var IdPB = $("#ddPhongBan option:selected").val();
+                $("#tabCT").removeClass("active");
+                $("#selectCT").removeClass("active");
+                $("#tabNV").addClass("active");
+                $("#selectNV").addClass("active");
+                $.get('@Url.Action("GetNhanVienByIdPB","NhanVien")',
+                    { id: IdPB }, function (data) {
+                        $("#selectNV").html(data);
+                    });
+            });
+
+            var Id = $("#ddCongTrinh option:selected").val();
+            $.get('@Url.Action("GetCongTrinhByTinhTrang", "CongTrinh")',
+                    { id: Id }, function (data) {
+                        $("#selectCT").html(data);
+                    });
+
+            $("#ddCongTrinh").change(function () {
+                var Id = $("#ddCongTrinh option:selected").val();
+                $("#tabNV").removeClass("active");
+                $("#selectNV").removeClass("active");
+                $("#tabCT").addClass("active");
+                $("#selectCT").addClass("active");
+                $.get('@Url.Action("GetCongTrinhByTinhTrang", "CongTrinh")',
+                    { id: Id }, function (data) {
+                        $("#selectCT").html(data);
+                    });
+            });
+
+            /*EventClick btnXacNhan */
+            $("#btnPhanCong").click(function (e) {
+
+                var temp = '';
+                var radioCT = $("#tableCT tbody tr").find("input[type='radio']:checked").attr("id");
+                $.each($("#tableNV tbody tr"), function (index, value) {
+                    if (radioCT != undefined) {
+                        var idNV = $(this).attr("data-id");
+                        var select = $(this).find("input[type='checkbox']").is(':checked');     //Giả về True hoặc False
+                        if (select == true) {
+                            temp += idNV + "¶"
+                        }
+                    }
+                });
+               // console.log(temp);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ChamCong/PhanCong",
+                    data: { IdCT: radioCT, listPhanCong: temp },
+                    success: function (result) {
+                        alert("Chấm Công Thành Công!");
+                        location.reload();
+                    }
+                });
+            });
+        });
+
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#table').DataTable();
+        });
+    </script>
+
+    <script>
+        function check() {
+            $("#tableCT input[type='radio'][name=ChonCT]").change(function () {
+                $("#ddPhongBan").removeAttr("disabled");
+                $("#tabNV").removeClass("invisible");
+                var id = $("#tableCT input[type='radio'][name=ChonCT]:checked").attr("id");
+                $.ajax({
+                    type: "GET",
+                    url: "/ChamCong/PhanCongNhanSu",
+                    data: { id: id },
+                    success: function (result) {
+                        $("#tabCT").removeClass("active");
+                        $("#selectCT").removeClass("active");
+                        $("#tabNV").addClass("active");
+                        $("#selectNV").addClass("active");
+                    }
+                });
+
+            })
+        }
+
+        function notifyNV() {
+            var checkedbox = $("#tableNV input[type='checkbox']:checked");
+
+            if (checkedbox.length == 0) {
+                $.notify({
+                    icon: 'glyphicon glyphicon-star',
+                    message: "Hãy lựa chọn Nhân Viên cho Công Trình và nhấn <b> Xác Nhận</b> để tiếp tục!"
+                }, {
+                    type: 'warning',
+                    timer: 2000,
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                });
+            }
+
+        }
+    </script>
+}
+
+
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Phân Công Nhân Sự
+        <small></small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li><a href="#">Công Trình</a></li>
+        <li class="active">Phân Công Nhân Sự</li>
+    </ol>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            @using (Html.BeginForm())
+            {
+                <div class="box">
+                    <div class="box-header">
+                        <div class="row">
+
+                            <div class="col-md-5">
+                                <select id="ddCongTrinh" class="form-control">
+                                    <option value="0">-- Danh Sách Công Trình --</option>
+                                    <option value="1">Công Trình đang thi công</option>
+                                    <option value="2">Công Trình chưa thi công</option>
+                                    <option value="3">Công Trình đã kết thúc</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-5">
+                                <select id="ddPhongBan" class="form-control" disabled>
+                                    <option value="0">-- Nhân Viên theo Phòng Ban --</option>
+                                    @foreach (var phongban in ViewBag.ListPB)
+                                    {
+                                        <option value="@phongban.IdPB">@phongban.TenPB</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <button class="btn btn-primary" id="btnPhanCong" type="submit"><i class="fa fa-fw fa-bullhorn"></i>  Phân Công</button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <!-- Custom tabs (Charts with tabs)-->
+                        <div class="nav-tabs-custom">
+                            <!-- Tabs within a box -->
+                            <ul class="nav nav-tabs pull-left">
+                                <li class="active" id="tabCT"><a href="#selectCT" data-toggle="tab">Lựa chọn công trình</a></li>
+                                <li id="tabNV" class="invisible" onclick="notifyNV()"><a href="#selectNV" data-toggle="tab">Phân công nhân sự</a></li>
+                            </ul>
+                            <div class="tab-content no-padding">
+                                <!-- Morris chart - Sales -->
+                                <div class="tab-pane active" id="selectCT">
+
+                                </div>
+                                <div class="tab-pane" id="selectNV">
+
+                                </div>
+                                
+
+
+                            </div>
+                        </div>
+                        <!-- /.nav-tabs-custom -->
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            }
+            <!-- /.box -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

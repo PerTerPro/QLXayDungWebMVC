@@ -1,0 +1,345 @@
+﻿@model IEnumerable<QLXayDungWebMVC.Models.ChamCong>
+@{
+    ViewBag.Title = "Danh Sách Nhân Sự";
+    QLXayDungWebMVC.Dapper.CongTrinhRepo congtrinh = new QLXayDungWebMVC.Dapper.CongTrinhRepo();
+    QLXayDungWebMVC.Dapper.NhanVienRepo nhanvien = new QLXayDungWebMVC.Dapper.NhanVienRepo();
+    QLXayDungWebMVC.Dapper.ChiTietNgayCongRepo chitiet = new QLXayDungWebMVC.Dapper.ChiTietNgayCongRepo();
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @* Scripts DataTable *@
+    <script>
+        $(document).ready(function () {
+            $('#table').DataTable();
+            $('#tableList').DataTable();
+        });
+    </script>
+
+
+    @* Scripts Chấm Công theo List *@
+    <script>
+        $(document).ready(function () {
+            $("#btnThucThi").click(function (e) {
+                var temp = '';
+                if ($('#DeleteNS').is(':checked') == true) {
+                    $.each($("#tableList tbody tr"), function (index, value) {
+                        var checkbox = $(this).find("input[type='checkbox']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
+                        if (checkbox == true)                                                   /* Nếu checked == true */ {
+                            var id = $(this).attr("data-id");
+                            temp += id + "¶"
+                        }
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ChamCong/ChangeTinhTrang",
+                        data: { listId: temp },
+                        success: function (result) {
+                            alert("Xóa Nhân sự Thành Công!");
+                            location.reload();
+                        }
+                    });
+                }
+
+                if ($('#ChamCong').is(':checked') == true) {
+                    $.each($("#tableList tbody tr"), function (index, value) {
+                        var checkbox = $(this).find("input[type='checkbox']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
+                        if (checkbox == true)                                                   /* Nếu checked == true */ {
+                            var id = $(this).attr("data-id");
+                            var select = $(this).find("input[type='radio']:checked").val();     /*Get value input với type là radiobutton*/
+                            var description = $(this).find("select").val();                     /*Get value input với tag select */
+                            //debugger;
+                            temp += id + "_" + select + "_" + description + "¶"
+                        }
+                    });
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/ChiTietNgayCongs/InsertList",
+                        data: { listChamCong: temp },
+                        success: function (result) {
+                            alert("Chấm Công Thành Công!");
+                            location.reload();
+                        }
+                    });
+                }
+
+            });
+
+            //$("input[type='radio'][name=Choose]").click(function () {
+            //    $.each($("#tableList tbody tr"), function (index, value) {
+            //        var checkbox = $("#tableList tbody tr").find("input[type='checkbox']")
+            //        if (checkbox.is(':disabled') == false) {
+            //            if (checkbox.is(':checked') == true)
+            //            {
+            //                $('.icheckbox_flat-green').removeClass("checked");
+            //            }
+            //            else if (checkbox.is(':checked') == false) {
+            //                $('.icheckbox_flat-green').addClass("checked");
+            //            }
+
+
+            //        }
+            //    });
+            //});
+
+            $("#Choose").click(function () {
+                $.each($("#tableList tbody tr"), function (index, value) {
+                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']")
+                    checkbox.prop("checked", true);                     //Add Attr Checked
+                    $('.icheckbox_flat-green').addClass("checked");
+                });
+            });
+
+            $("#NoChoose").click(function () {
+                $.each($("#tableList tbody tr"), function (index, value) {
+                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']")
+                    checkbox.removeAttr("checked");
+                    $('.icheckbox_flat-green').removeClass("checked");
+                });
+            });
+
+            $("#DeleteNS").click(function () {
+                $("#btnThucThi").val("Xóa nhân sự")
+            });
+
+            $("#ChamCong").click(function () {
+                $("#btnThucThi").val("Chấm Công")
+            });
+
+        });
+    </script>
+
+
+    @*Check ngày để hiển thị thông báo Notify*@
+    @if (ViewBag.NgayConLai <= 0)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#btnThucThi').attr("disabled", true)
+                $.notify({
+                    icon: 'glyphicon glyphicon-warning-sign',
+                    message: " Công trình @congtrinh.GetCongTrinhByID(ViewBag.IdCT).TenCT đã kết thúc thi công!"
+                }, {
+                    type: 'warning',
+                    timer: 2000,
+                    placement: {
+                        from: "top",
+                        align: "center"
+                    },
+                });
+
+
+            });
+        </script>
+    }
+
+    @*Old Scripts*@
+    @*<script>
+            $(document).ready(function () {
+                $("#btnChamCong").click(function (e) {
+
+                    var temp = '';
+                    $.each($("#tableList tbody tr"), function (index, value) {
+                        var id = $(this).attr("data-id");
+                        var select = $(this).find("select").val();
+                        var description = $(this).find("input").val();
+                        //debugger;
+                        temp += id + "_" + select + "_" + description + "¶"
+                    });
+
+                  $.ajax({
+                      type: "POST",
+                      url: "/ChiTietNgayCongs/InsertList",
+                      data: { listChamCong : temp },
+                      success: function (result) {
+                          location.reload();
+                      }
+              });
+              });
+            });
+        </script>*@
+}
+
+
+@using (Html.BeginForm())
+{
+    @*@Html.AntiForgeryToken()*@
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Công Trình: @congtrinh.GetCongTrinhByID(ViewBag.IdCT).TenCT <br />
+        </h1>
+
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> DashBoard</a></li>
+            <li><a href="#">Công Trình</a></li>
+            <li class="active">Danh Sách Nhân Viên</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- Profile Image -->
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <img class="img-thumbnail" src="~/Content/CongTrinh/@congtrinh.GetCongTrinhByID(ViewBag.IdCT).Image" id="AnhCT" style="width:300px;height:auto">
+                    </div>
+                    <div class="box-footer">
+                        <h5 style="text-align:center" title="Thời gian thi công"><b>Thời gian thi công</b></h5>
+                        <h4 style="text-align:center" title="Thời gian thi công">@congtrinh.GetCongTrinhByID(ViewBag.IdCT).NgayBatDau.ToString("dd/MM/yyyy") - @congtrinh.GetCongTrinhByID(ViewBag.IdCT).NgayKetThuc.ToString("dd/MM/yyyy")</h4>
+                    </div>
+                    <div class="box-footer">
+                        <h5 style="text-align:center"><b>Tình trạng công trình</b></h5>
+                        @if (ViewBag.NgayConLai > 0)
+                        {
+                            <h4 style="text-align: center" title="Today">@DateTime.Now.ToString("dd/MM/yyyy")</h4>
+                        }
+                        else
+                        {
+                            <h4 style="text-align: center" title="Tình trạng công trình">Kết Thúc Thi Công</h4>
+                        }
+                    </div>
+
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+
+            </div>
+            <!-- /.col -->
+
+
+            <div class="col-md-9">
+                <!-- Custom tabs -->
+                <div class="box box-primary">
+                    <!-- Tabs within a box -->
+                    @*<ul class="nav nav-tabs pull-right">
+                            <li><a href="#ChamCongDon" data-toggle="tab">Chi Tiết Ngày Công</a></li>
+                            <li class="active"><a href="#ChamCongList" data-toggle="tab">Chấm công</a></li>
+                            <li class="pull-left header"><i class="fa fa-inbox"></i> Danh Sách Nhân Viên</li>
+                        </ul>*@
+                    <div class="box-header with-border">
+                        <i class="fa fa-user"></i> <span style="font-size: 20px;">Danh Sách Nhân Viên</span>
+                    </div>
+                    <div class="box-header with-border">
+                        <h3 class="box-title">
+                            <input type="radio" name="Action" id="ChamCong" checked> Chấm Công
+                            <input type="radio" name="Action" id="DeleteNS"> Xóa Nhân sự |
+                            <input type="radio" name="Choose" id="Choose"> Chọn tất cả
+                            <input type="radio" name="Choose" id="NoChoose"> Bỏ chọn |
+                        </h3>
+                        <input id="btnThucThi" type="submit" value="Chấm Công" class="btn btn-primary" style="float:right;" />
+                    </div>
+                    <div class="box-body">
+                        @using (Html.BeginForm())
+                        {
+                            <table id="tableList" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Ảnh đại diện</th>
+                                        <th>Họ Tên</th>
+                                        <th>Đi làm</th>
+                                        <th>Lý do nghỉ</th>
+                                        <th>Ngày công</th>
+                                        <th>Chức năng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var chamcong in Model)
+                                    {
+                                        if (chamcong.TinhTrang == 0)
+                                        {
+                                            if (chitiet.GetChiTietNgayCongByID_Date(chamcong.IdChamCong, DateTime.Now.ToString("yyyy-MM-dd")).Count() > 0 || ViewBag.NgayConLai <= 0)
+                                            {
+                                                <tr data-id="@chamcong.IdChamCong">
+                                                    <td><input type="checkbox" class="flat-red" disabled></td>
+                                                    <td><img src="~/Content/NhanVien/@nhanvien.GetNhanVienByID(chamcong.IdNV).AnhNV" style="width:50px;height:auto" /></td>
+                                                    <td>@nhanvien.GetNhanVienByID(chamcong.IdNV).HoTen</td>
+                                                    <td>
+                                                        <input type="radio" class="minimal" checked disabled id="@chamcong.IdChamCong" name="DiLam[@chamcong.IdChamCong]" value="0" onclick="haha()"> Có<br>
+                                                        <input type="radio" class="minimal-red" disabled id="@chamcong.IdChamCong" name="DiLam[@chamcong.IdChamCong]" value="1" onclick="haha()"> Không<br>
+                                                    </td>
+                                                    <td>
+                                                        <select class="form-control" id="dropdown[@chamcong.IdChamCong]" disabled>
+                                                            <option value="Ốm">Ốm</option>
+                                                            <option value="Yếu">Yếu</option>
+                                                            <option value="Bận Việc Gia Đình">Bận Việc Gia Đình</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>@chamcong.NgayCong</td>
+                                                    <td>
+                                                        @*@Html.ActionLink("Chấm Công", "NhanVien", "ChiTietNgayCongs" , new { IdCT = @Url.RequestContext.RouteData.Values["id"] ,IdNV = chamcong.IdNV },null) |*@
+                                                        @Html.ActionLink("Chi Tiết Ngày Công", "NhanVien", "ChiTietNgayCongs", new { id = chamcong.IdChamCong }, null)
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            else
+                                            {
+                                                <tr data-id="@chamcong.IdChamCong">
+                                                    <td><input type="checkbox" class="flat-red" checked></td>
+                                                    <td><img src="~/Content/NhanVien/@nhanvien.GetNhanVienByID(chamcong.IdNV).AnhNV" style="width:50px;height:auto" /></td>
+                                                    <td>@nhanvien.GetNhanVienByID(chamcong.IdNV).HoTen</td>
+                                                    <td>
+                                                        @*<select class="form-control" id="dropdown[@chamcong.IdChamCong]">
+                                                                <option value="0">Có</option>
+                                                                <option value="1">Không</option>
+                                                            </select>*@
+
+                                                        <input type="radio" class="minimal" checked="checked" id="@chamcong.IdChamCong" name="DiLam[@chamcong.IdChamCong]" value="0" onclick="haha()"> Có<br>
+                                                        <input type="radio" class="minimal-red" id="@chamcong.IdChamCong" name="DiLam[@chamcong.IdChamCong]" value="1" onclick="haha()"> Không<br>
+                                                    </td>
+                                                    <td>
+                                                        @*<input class="form-control" type="text" placeholder="Lý do nghỉ" id="input[@chamcong.IdChamCong]" />*@
+
+                                                        <select class="form-control" id="dropdown[@chamcong.IdChamCong]">
+                                                            <option value="Ốm">Ốm</option>
+                                                            <option value="Yếu">Yếu</option>
+                                                            <option value="Bận Việc Gia Đình">Bận Việc Gia Đình</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>@chamcong.NgayCong</td>
+                                                    <td>
+                                                        @*@Html.ActionLink("Chấm Công", "NhanVien", "ChiTietNgayCongs" , new { IdCT = @Url.RequestContext.RouteData.Values["id"] ,IdNV = chamcong.IdNV },null) |*@
+                                                        @Html.ActionLink("Chi Tiết Ngày Công", "NhanVien", "ChiTietNgayCongs", new { id = chamcong.IdChamCong }, null)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th>Ảnh đại diện</th>
+                                        <th>Họ Tên</th>
+                                        <th>Đi làm</th>
+                                        <th>Lý do nghỉ</th>
+                                        <th>Ngày công</th>
+                                        <th>Chức năng</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        }
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <!-- /.col -->
+
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+}
+
+
