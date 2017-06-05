@@ -29,7 +29,7 @@
                         var checkbox = $(this).find("input[type='checkbox']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
                         if (checkbox == true)                                                   /* Nếu checked == true */ {
                             var id = $(this).attr("data-id");
-                            temp += id + "¶"
+                            temp += id + "¶";
                         }
                     });
 
@@ -38,7 +38,6 @@
                         url: "/ChamCong/ChangeTinhTrang",
                         data: { listId: temp },
                         success: function (result) {
-                            alert("Xóa Nhân sự Thành Công!");
                             location.reload();
                         }
                     });
@@ -88,7 +87,7 @@
 
             $("#Choose").click(function () {
                 $.each($("#tableList tbody tr"), function (index, value) {
-                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']")
+                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']");
                     checkbox.prop("checked", true);                     //Add Attr Checked
                     $('.icheckbox_flat-green').addClass("checked");
                 });
@@ -96,7 +95,7 @@
 
             $("#NoChoose").click(function () {
                 $.each($("#tableList tbody tr"), function (index, value) {
-                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']")
+                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']");
                     checkbox.removeAttr("checked");
                     $('.icheckbox_flat-green').removeClass("checked");
                 });
@@ -104,10 +103,24 @@
 
             $("#DeleteNS").click(function () {
                 $("#btnThucThi").val("Xóa nhân sự")
+                $.each($("#tableList tbody tr"), function (index, value) {
+                    var checkbox = $("#tableList tbody tr").find("input[type='checkbox']");
+                    checkbox.removeAttr("disabled");
+                    checkbox.prop("checked", true);                     //Add Attr Checked
+                    $('.icheckbox_flat-green').addClass("checked");
+                    $('.icheckbox_flat-green').removeClass("disabled");
+                });
             });
 
             $("#ChamCong").click(function () {
-                $("#btnThucThi").val("Chấm Công")
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (result) {
+                        location.reload();
+                    }
+                });
             });
 
         });

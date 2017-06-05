@@ -246,7 +246,7 @@ namespace QLXayDungWebMVC.Controllers
                 {
                     try
                     {
-                        chamcongRP.ChangeTinhTrang(int.Parse(listId[i].ToString()),1,DateTime.Now.ToString("yyyy-MM-dd"));
+                        chamcongRP.ChangeTinhTrang(int.Parse(list[i].ToString()),1,DateTime.Now.ToString("yyyy-MM-dd"));
                     }
                     catch (Exception ex)
                     {
