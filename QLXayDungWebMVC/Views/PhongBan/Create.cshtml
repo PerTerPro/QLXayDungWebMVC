@@ -34,17 +34,25 @@
                         var radio = $(this).find("input[type='radio']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
                         if (radio == true)                                                   /* Nếu checked == true */ {
                             var id = $(this).attr("data-id");
-                            temp = id
-                            $('#IdTP').val(temp)
+                            temp = id;
+                            $('#IdTP').val(temp);
                         }
                     });
                 })
 
+                $('#table').DataTable({
+                    "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]],
+                    "language": {
+                        "search": "Search:",
+                        "searchPlaceholder": "Nhập thông tin...",
+                        "zeroRecords": "Không có thông tin nào thỏa mãn điều kiện tìm kiếm..."
+                    }
+
+                });
             });
 
 
     </script>
-
 }
 
 @using (Html.BeginForm("Create", "PhongBan", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -180,7 +188,6 @@
                                 {
                                     <td>Nhân Viên</td>
                                 }
-                                <td>
                                 <td><input type="radio" class="flat-red" name="Choose"></td>
                             </tr>
                         }

@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "Thay đổi phòng ban";
+    QLXayDungWebMVC.Dapper.NhanVienRepo nhanvienRP = new QLXayDungWebMVC.Dapper.NhanVienRepo();
+    QLXayDungWebMVC.Dapper.PhongBanRepo phongbanRP = new QLXayDungWebMVC.Dapper.PhongBanRepo();
 }
 
 @section PhongBan{
@@ -19,6 +21,36 @@
             <li><a href="#"><i class="fa fa-circle-o"></i> Chuyển nhân sự</a></li>
         </ul>
     </li>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var temp = '';
+            $('#OK').click(function (e) {
+                $.each($("#table tbody tr"), function (index, value) {
+                    var radio = $(this).find("input[type='radio']").is(":checked");   /*Kiểm tra Checkbox có đang checked hay không?*/
+                    if (radio == true)                                                   /* Nếu checked == true */ {
+                        var id = $(this).attr("data-id");
+                        temp = id;
+                        $('#IdTP').val(temp);
+                    }
+                });
+            })
+
+            $('#table').DataTable({
+                "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]],
+                "language": {
+                    "search": "Search:",
+                    "searchPlaceholder": "Nhập thông tin...",
+                    "zeroRecords": "Không có thông tin nào thỏa mãn điều kiện tìm kiếm..."
+                }
+            });
+        });
+
+
+    </script>
 }
 
 @using (Html.BeginForm("Edit", "PhongBan", FormMethod.Post, new { enctype = "multipart/form-data", id = "popupForm" }))
@@ -64,7 +96,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Trường phòng</label>
-                                            @Html.EditorFor(model => model.IdTP, new { htmlAttributes = new { @class = "form-control", placeholder = "Chọn trưởng phòng" } })
+                                            @Html.EditorFor(model => model.IdTP, new { htmlAttributes = new { data_toggle = "modal", @data_target = "#myModal", @class = "form-control", placeholder = "Chọn trưởng phòng" } })
                                             @Html.ValidationMessageFor(model => model.IdTP, "", new { @class = "text-danger" })
                                         </div>
                                     </div>
@@ -116,8 +148,59 @@
     <!-- /.content -->
 }
 
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Danh sách nhân viên</h4>
+            </div>
+            <div class="modal-body">
+                <table id="table" class="table table-hover3 table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ảnh đại diện</th>
+                            <th>Tên NV</th>
+                            <th>Phòng Ban</th>
+                            <th>Chức vụ</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var nhanvien in nhanvienRP.GetNhanVien())
+                        {
+                            <tr data-id="@nhanvien.IdNV">
+                                <td>@nhanvien.IdNV</td>
+                                <td><img src="~/Content/NhanVien/@nhanvien.AnhNV" style="width:50px;height:auto" /></td>
+                                <td>@nhanvien.HoTen</td>
+                                <td>@phongbanRP.GetPhongBanByID(nhanvien.IdPB).TenPB</td>
+                                @if (phongbanRP.GetPhongBanByID(nhanvien.IdPB).IdTP == nhanvien.IdNV)
+                                {
+                                    <td> Trưởng Phòng</td>
+                                }
+                                else
+                                {
+                                    <td>Nhân Viên</td>
+                                }
+                                @if (@Model.IdTP == nhanvien.IdNV)
+                                {
+                                    <td><input type="radio" class="flat-red" name="Choose" checked="checked"></td>
+                                }
+                                else
+                                {
+                                    <td><input type="radio" class="flat-red" name="Choose"></td>
+                                }
 
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal" id="OK">OK!</button>
+            </div>
+        </div>
+    </div>
+</div>
