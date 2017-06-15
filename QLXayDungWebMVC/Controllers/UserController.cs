@@ -36,9 +36,10 @@ namespace QLXayDungWebMVC.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.ChucVu = Check(user.Active);
+           // ViewBag.ChucVu = Check(user.Active);
             return PartialView("Details", user);
             //return View(user);
+
         }
 
         // GET: /User/Create
@@ -52,19 +53,18 @@ namespace QLXayDungWebMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(User user, HttpPostedFileBase fileImage)
+        public async Task<ActionResult> Create(User user, HttpPostedFileBase fileImage)
         {
-            if (ModelState.IsValid)
+            if (fileImage != null)
             {
-                if (fileImage != null)
+                string ext = Path.GetExtension(fileImage.FileName);
+                string fileName = user.Username + ext;
+                string path = Path.Combine(Server.MapPath("~/Content/Users"), fileName);
+                user.Image = fileName;
+                user.NgayTao = DateTime.Now;
+                user.Active = 1;
+                if (ModelState.IsValid)
                 {
-                    ViewBag.ThongBao = "Haha!";
-                    string ext = Path.GetExtension(fileImage.FileName);
-                    string fileName = user.Username + ext;
-                    string path = Path.Combine(Server.MapPath("~/Content/Users"), fileName);
-                    user.Image = fileName;
-                    user.NgayTao = DateTime.Now;
-                    user.Active = 1;
                     //kiểm tra ảnh đã tồn tại hay chưa
                     if (System.IO.File.Exists(path))
                     {
@@ -73,18 +73,15 @@ namespace QLXayDungWebMVC.Controllers
                     else
                     {
                         fileImage.SaveAs(path);
-                        userRP.CreateUser(user);
-                        return RedirectToAction("Index");
                     }
-
+                    userRP.CreateUser(user);
+                    return RedirectToAction("Index");
                 }
-                else
-                {
-                    ViewBag.ThongBao = "Vui lòng thêm ảnh!";
-                }
-
             }
-
+            else
+            {
+                ViewBag.ThongBao = "Vui lòng thêm ảnh!";
+            }
             return View(user);
         }
 
@@ -260,7 +257,7 @@ namespace QLXayDungWebMVC.Controllers
                 }
                 return RedirectToAction("XetDuyetUsers", "User");
             }
-            return View();
+            return RedirectToAction("XetDuyetUsers", "User");
         }
 
         public string Check(int i)
