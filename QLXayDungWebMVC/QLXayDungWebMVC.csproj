@@ -177,6 +177,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\ReadController.cs" />
     <Compile Include="Dapper\ChamCongRepo.cs" />
     <Compile Include="Dapper\ChiTietNgayCongRepo.cs" />
     <Compile Include="Dapper\CongTrinhRepo.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Logger\Logger.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ChamCong.cs" />
     <Compile Include="Models\ChiTietNgayCong.cs" />
@@ -1307,6 +1309,7 @@
     <Content Include="Views\CongTrinh\GetCongTrinhByTinhTrang.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\XetDuyetUsers.cshtml" />
+    <Content Include="Views\Read\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

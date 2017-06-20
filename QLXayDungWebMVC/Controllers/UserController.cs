@@ -193,7 +193,7 @@ namespace QLXayDungWebMVC.Controllers
                 {
                     if (user.Password == RetypePassword)
                     {
-                        user.Image = "";
+                        user.Image = null;
                         user.NgayTao = DateTime.Now;
                         user.Active = 1;
                         try
